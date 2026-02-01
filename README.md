@@ -1,5 +1,9 @@
 # rn-logs 🔧
 
+[![npm version](https://img.shields.io/npm/v/rn-logs-cli.svg)](https://www.npmjs.com/package/rn-logs-cli)
+[![npm downloads](https://img.shields.io/npm/dm/rn-logs-cli.svg)](https://www.npmjs.com/package/rn-logs-cli)
+[![license](https://img.shields.io/npm/l/rn-logs-cli.svg)](https://github.com/okwasniewski/react-native-logs-cli/blob/main/LICENSE)
+
 Fast CLI to read React Native Metro logs via CDP. Built for agent-friendly
 output with optional TTY niceties.
 
