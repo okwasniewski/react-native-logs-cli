@@ -136,7 +136,7 @@ function run(): void {
  */
 function printInspectorApps(apps: InspectorApp[]): void {
   if (apps.length === 0) {
-    printWarn("no apps connected to Metro. Open DevTools in your app and retry.");
+    printWarn("no apps connected to Metro. Run your app on a simulator or device.");
     return;
   }
 
@@ -154,7 +154,7 @@ async function resolveTargetApp(
   selector?: string
 ): Promise<InspectorApp> {
   if (apps.length === 0) {
-    throw new Error("no apps connected to Metro. Open DevTools in your app and retry.");
+    throw new Error("no apps connected to Metro. Run your app on a simulator or device.");
   }
 
   if (selector) {

@@ -40,7 +40,7 @@ export function isMetroConnectionError(error: unknown): boolean {
     normalized.includes("etimedout") ||
     normalized.includes("enotfound") ||
     normalized.includes("ehostunreach") ||
-    normalized.includes("connect") ||
+    normalized.includes("connection refused") ||
     normalized.includes("socket hang up") ||
     normalized.includes("fetch failed")
   );

@@ -7,6 +7,11 @@ describe("isMetroConnectionError", () => {
     expect(isMetroConnectionError(error)).toBe(true);
   });
 
+  it("does not treat no apps connected as Metro error", () => {
+    const error = new Error("no apps connected to Metro. Run your app on a simulator or device.");
+    expect(isMetroConnectionError(error)).toBe(false);
+  });
+
   it("detects fetch failed", () => {
     const error = new Error("fetch failed");
     expect(isMetroConnectionError(error)).toBe(true);

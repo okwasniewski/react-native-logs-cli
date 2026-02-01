@@ -54,7 +54,7 @@ rn-logs logs --app "<id|name>" --regex "error|warn"
 ## Common failures
 
 - `metro not reachable` -> start Metro or fix host/port
-- `no apps connected` -> open DevTools in the app
+- `no apps connected` -> run app on simulator or device
 - `multiple apps connected` -> pass `--app`
 
 ## Examples
