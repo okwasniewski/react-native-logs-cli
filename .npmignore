@@ -1,0 +1,8 @@
+skills/
+opensrc/
+tests/
+docs/
+node_modules/
+.github/
+.agent/
+*.log
