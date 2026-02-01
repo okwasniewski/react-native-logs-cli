@@ -87,7 +87,7 @@ function run(): void {
     .option("--port <port>", "Metro port", `${DEFAULT_PORT}`)
     .option("--regex <expr>", "filter logs by regex")
     .option("--limit <n>", "capture last n logs then exit", (value) => Number(value))
-    .option("--follow", "stream logs", true)
+    .option("--follow", "stream logs")
     .addHelpText(
       "after",
       "\nExamples:\n  rn-logs logs --app \"MyApp\" --follow\n  rn-logs logs --app \"MyApp\" --limit 50\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
@@ -114,14 +114,19 @@ function run(): void {
           }
         }
         const limit = options.limit ?? 0;
-        const follow = limit > 0 ? false : options.follow !== false;
+        const follow =
+          limit > 0
+            ? false
+            : options.follow !== undefined
+              ? options.follow
+              : !options.regex;
         const shouldBuffer = limit > 0 && !follow;
         const tailBuffer = shouldBuffer ? createTailBuffer(limit) : null;
 
         const listener = attachConsoleListener(connection, {
           regex,
           max: shouldBuffer ? undefined : limit > 0 ? limit : undefined,
-          timeoutMs: follow ? undefined : 5000,
+          timeoutMs: follow ? undefined : shouldBuffer ? 500 : 5000,
           onLog: (_, formatted) => {
             if (!shouldBuffer) {
               printLine(formatted);

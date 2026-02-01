@@ -60,7 +60,7 @@ Options:
 - `--port <port>` Metro port (default: 8081)
 - `--regex <expr>` filter logs by regex
 - `--limit <n>` capture last n logs then exit
-- `--follow` stream logs (default)
+- `--follow` stream logs (default unless --regex or --limit)
 
 ## Notes
 
