@@ -54,13 +54,18 @@ function run(): void {
   program
     .name("rn-logs")
     .description("React Native Metro logs CLI")
-    .version("0.0.1");
+    .version("0.0.1")
+    .addHelpText(
+      "after",
+      "\nExamples:\n  rn-logs apps\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
+    );
 
   program
     .command("apps")
     .description("list apps connected to Metro")
     .option("--host <host>", "Metro host", DEFAULT_HOST)
     .option("--port <port>", "Metro port", `${DEFAULT_PORT}`)
+    .addHelpText("after", "\nExample:\n  rn-logs apps --port 8081\n")
     .action(async (options: GlobalOptions) => {
       let metroServerOrigin = "";
       try {
@@ -82,6 +87,10 @@ function run(): void {
     .option("--regex <expr>", "filter logs by regex")
     .option("--max <n>", "max logs then exit", (value) => Number(value))
     .option("--follow", "stream logs", true)
+    .addHelpText(
+      "after",
+      "\nExamples:\n  rn-logs logs --app \"MyApp\" --follow\n  rn-logs logs --app \"MyApp\" --max 50\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
+    )
     .action(async (options: LogsOptions) => {
       let metroServerOrigin = "";
       try {
