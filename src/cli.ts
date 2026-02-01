@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readFileSync } from "node:fs";
 import { cancel, isCancel, log, select } from "@clack/prompts";
 import { Command } from "commander";
 import {
@@ -34,6 +35,19 @@ type BufferedLogEntry = {
 };
 
 /**
+ * Resolve CLI version from package.json.
+ */
+function getCliVersion(): string {
+  try {
+    const data = readFileSync(new URL("../package.json", import.meta.url), "utf8");
+    const parsed = JSON.parse(data) as { version?: string };
+    return typeof parsed.version === "string" ? parsed.version : "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+/**
  * Validate and normalize Metro host/port.
  */
 function normalizeGlobalOptions(options: GlobalOptions): GlobalOptions {
@@ -61,7 +75,7 @@ function run(): void {
   program
     .name("rn-logs")
     .description("React Native Metro logs CLI")
-    .version("0.0.1")
+    .version(getCliVersion())
     .addHelpText(
       "after",
       "\nExamples:\n  rn-logs apps\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
