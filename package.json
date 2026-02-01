@@ -1,0 +1,24 @@
+{
+  "name": "react-native-logs-cli",
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "rn-logs": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "bun run src/cli.ts",
+    "dev": "bun run --watch src/cli.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@clack/prompts": "1.0.0",
+    "@expo/cli": "54.0.22",
+    "commander": "^14.0.3",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "typescript": "^5.9.3"
+  }
+}
