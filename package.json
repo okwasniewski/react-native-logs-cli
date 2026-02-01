@@ -10,7 +10,8 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "start": "bun run src/cli.ts",
     "dev": "bun run --watch src/cli.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "release": "release-it"
   },
   "dependencies": {
     "@clack/prompts": "1.0.0",
@@ -21,6 +22,7 @@
     "@types/node": "^25.1.0",
     "@types/ws": "8.18.1",
     "bun-types": "1.3.8",
+    "release-it": "^19.2.4",
     "typescript": "^5.9.3"
   }
 }
