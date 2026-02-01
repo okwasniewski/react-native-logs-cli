@@ -21,6 +21,10 @@ npm install -g rn-logs-cli
 bun add -g rn-logs-cli
 ```
 
+See
+[`skills/rn-logs-usage.md`](https://github.com/okwasniewski/react-native-logs-cli/blob/main/skills/rn-logs-usage.md)
+for the agent usage guide.
+
 ## Package
 
 Published as `rn-logs-cli` on npm.
@@ -76,7 +80,3 @@ Options:
 
 - CDP attach and React Native DevTools cannot run at the same time; they compete
   for the inspector channel. Use one per session.
-
-## Agent Skill
-
-See `skills/rn-logs-usage.md` for the agent usage guide.
