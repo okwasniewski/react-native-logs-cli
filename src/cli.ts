@@ -87,6 +87,7 @@ function run(): void {
     .option("--port <port>", "Metro port", `${DEFAULT_PORT}`)
     .option("--regex <expr>", "filter logs by regex")
     .option("--limit <n>", "capture last n logs then exit", (value) => Number(value))
+    .option("--verbose", "include full stack traces")
     .option("--follow", "stream logs")
     .addHelpText(
       "after",
@@ -125,6 +126,7 @@ function run(): void {
 
         const listener = attachConsoleListener(connection, {
           regex,
+          verbose: options.verbose,
           max: shouldBuffer ? undefined : limit > 0 ? limit : undefined,
           timeoutMs: follow ? undefined : shouldBuffer ? 500 : 5000,
           onLog: (_, formatted) => {

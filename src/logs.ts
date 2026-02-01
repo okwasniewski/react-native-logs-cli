@@ -61,6 +61,7 @@ type ConsoleListenerOptions = {
   regex?: RegExp;
   max?: number;
   timeoutMs?: number;
+  verbose?: boolean;
   onLog: (message: ConsoleMessage, formatted: string) => void;
 };
 
@@ -75,12 +76,23 @@ const UNSUPPORTED_CLIENT_MESSAGE =
 /**
  * Formats a Chrome DevTools Protocol RemoteObject into a readable string.
  */
-export function formatConsoleArgument(arg: RemoteObject): string {
+type FormatOptions = {
+  verbose?: boolean;
+};
+
+/**
+ * Format a console argument into a readable string.
+ */
+export function formatConsoleArgument(arg: RemoteObject, options: FormatOptions = {}): string {
   if (arg.type === "undefined") {
     return "undefined";
   }
   if (arg.subtype === "null") {
     return "null";
+  }
+
+  if (arg.subtype === "error" && arg.description !== undefined) {
+    return options.verbose ? arg.description : stripStackTrace(arg.description);
   }
 
   if (arg.description !== undefined) {
@@ -96,6 +108,14 @@ export function formatConsoleArgument(arg: RemoteObject): string {
   }
 
   return `[${arg.type}${arg.subtype ? ` ${arg.subtype}` : ""}]`;
+}
+
+/**
+ * Strip stack traces from error descriptions.
+ */
+function stripStackTrace(description: string): string {
+  const [firstLine] = description.split("\n");
+  return firstLine ?? description;
 }
 
 /**
@@ -147,7 +167,7 @@ export function attachConsoleListener(
     }
 
     const args = data.params.args || [];
-    const text = args.map(formatConsoleArgument).join(" ");
+    const text = args.map((arg) => formatConsoleArgument(arg, { verbose: options.verbose })).join(" ");
     if (!text || text.includes(UNSUPPORTED_CLIENT_MESSAGE)) {
       return;
     }

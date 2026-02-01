@@ -50,6 +50,7 @@ rn-logs logs --app "<id|name>" --regex "error|warn"
 
 - When multiple apps are connected, you must pass `--app`.
 - Output is plain text for agent-friendly consumption.
+- Use `--verbose` to include full stack traces.
 
 ## Common failures
 
