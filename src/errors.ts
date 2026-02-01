@@ -4,7 +4,7 @@ type ErrorLike = {
   code?: string;
 };
 
-const METRO_ERROR_HINTS = "ensure Metro is running and reachable";
+const METRO_ERROR_HINTS = "Ensure Metro is running and reachable";
 
 /**
  * Format Metro connection errors into user-friendly messages.
@@ -14,14 +14,14 @@ export function formatMetroConnectionError(
   metroServerOrigin: string
 ): string {
   if (isMetroConnectionError(error)) {
-    return `metro not reachable at ${metroServerOrigin}; ${METRO_ERROR_HINTS}`;
+    return `Metro not reachable at ${metroServerOrigin}; ${METRO_ERROR_HINTS}`;
   }
 
   if (error instanceof Error) {
     return error.message;
   }
 
-  return `unexpected error: ${String(error)}`;
+  return `Unexpected error: ${String(error)}`;
 }
 
 /**

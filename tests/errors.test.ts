@@ -8,7 +8,7 @@ describe("isMetroConnectionError", () => {
   });
 
   it("does not treat no apps connected as Metro error", () => {
-    const error = new Error("no apps connected to Metro. Run your app on a simulator or device.");
+    const error = new Error("No apps connected to Metro. Run your app on a simulator or device.");
     expect(isMetroConnectionError(error)).toBe(false);
   });
 
@@ -28,6 +28,6 @@ describe("formatMetroConnectionError", () => {
     const error = new Error("connect ECONNREFUSED 127.0.0.1:8081");
     const message = formatMetroConnectionError(error, "http://localhost:8081");
     expect(message).toContain("http://localhost:8081");
-    expect(message).toContain("ensure Metro is running");
+    expect(message).toContain("Ensure Metro is running");
   });
 });

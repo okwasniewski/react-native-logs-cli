@@ -33,11 +33,11 @@ type LogsOptions = GlobalOptions & {
 function normalizeGlobalOptions(options: GlobalOptions): GlobalOptions {
   const port = Number(options.port);
   if (!Number.isInteger(port) || port <= 0) {
-    throw new Error("invalid --port value");
+    throw new Error("Invalid --port value");
   }
 
   if (!options.host?.trim()) {
-    throw new Error("invalid --host value");
+    throw new Error("Invalid --host value");
   }
 
   return {
@@ -97,7 +97,7 @@ function run(): void {
       try {
         const { host, port } = normalizeGlobalOptions(options);
         if (options.limit !== undefined && (!Number.isInteger(options.limit) || options.limit <= 0)) {
-          throw new Error("invalid --limit value");
+          throw new Error("Invalid --limit value");
         }
         metroServerOrigin = getMetroServerOrigin(host, port);
         const apps = await fetchInspectorAppsAsync(metroServerOrigin);
@@ -110,7 +110,7 @@ function run(): void {
           try {
             regex = new RegExp(options.regex);
           } catch (error) {
-            throw new Error(`invalid --regex: ${(error as Error).message}`);
+            throw new Error(`Invalid --regex: ${(error as Error).message}`);
           }
         }
         const limit = options.limit ?? 0;
@@ -151,7 +151,7 @@ function run(): void {
  */
 function printInspectorApps(apps: InspectorApp[]): void {
   if (apps.length === 0) {
-    printWarn("no apps connected to Metro. Run your app on a simulator or device.");
+    printWarn("No apps connected to Metro. Run your app on a simulator or device.");
     return;
   }
 
@@ -169,7 +169,7 @@ async function resolveTargetApp(
   selector?: string
 ): Promise<InspectorApp> {
   if (apps.length === 0) {
-    throw new Error("no apps connected to Metro. Run your app on a simulator or device.");
+    throw new Error("No apps connected to Metro. Run your app on a simulator or device.");
   }
 
   if (selector) {
@@ -185,7 +185,7 @@ async function resolveTargetApp(
   }
 
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
-    throw new Error("multiple apps connected. use --app to select one");
+    throw new Error("Multiple apps connected. Use --app to select one");
   }
 
   const selection = await select({
@@ -204,7 +204,7 @@ async function resolveTargetApp(
 
   const selected = selectInspectorApp(apps, selection as string);
   if (!selected) {
-    throw new Error("app selection failed");
+    throw new Error("App selection failed");
   }
   return selected;
 }
@@ -259,7 +259,7 @@ function buildErrorMessage(error: unknown, metroServerOrigin: string): string {
     return error.message;
   }
 
-  return `unexpected error: ${String(error)}`;
+  return `Unexpected error: ${String(error)}`;
 }
 
 /**
