@@ -3,6 +3,8 @@
 Fast CLI to read React Native Metro logs via CDP. Built for agent-friendly
 output with optional TTY niceties.
 
+<img width="600" alt="Terminal Screenshot" src="https://github.com/user-attachments/assets/223020b5-a797-411c-9fcc-7a9e8fd80b37" />
+
 ## Why
 
 - Lightweight alternative to MCP for log access
