@@ -59,3 +59,7 @@ Options:
 - Requires Metro running and app DevTools open.
 - When multiple apps connected, use `--app` or select interactively in TTY.
 - Non-interactive mode stays plain text.
+
+## Agent Skill
+
+See `skills/rn-logs-usage.md` for the agent usage guide.
