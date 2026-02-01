@@ -1,11 +1,24 @@
 # rn-logs
 
-Simple CLI to read React Native Metro logs via CDP.
+Fast CLI to read React Native Metro logs via CDP. Built for agent-friendly output with optional TTY niceties.
+
+## Why
+
+- Lightweight alternative to MCP for log access
+- Plain text output for low context usage
+- Works with Metro + React Native DevTools
 
 ## Install
 
 ```bash
 bun install
+```
+
+## Quickstart
+
+```bash
+rn-logs apps
+rn-logs logs --app "MyApp"
 ```
 
 ## Usage
@@ -45,3 +58,4 @@ Options:
 
 - Requires Metro running and app DevTools open.
 - When multiple apps connected, use `--app` or select interactively in TTY.
+- Non-interactive mode stays plain text.
