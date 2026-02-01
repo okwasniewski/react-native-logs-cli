@@ -6,13 +6,20 @@
     "rn-logs": "./dist/cli.js",
     "rn-logs-cli": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
     "lint": "tsc -p tsconfig.json --noEmit",
     "start": "bun run src/cli.ts",
     "dev": "bun run --watch src/cli.ts",
     "test": "bun test",
-    "release": "release-it"
+    "release": "release-it",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "@clack/prompts": "1.0.0",
