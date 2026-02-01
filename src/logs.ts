@@ -58,7 +58,6 @@ type ConsoleMessage = {
 };
 
 type ConsoleListenerOptions = {
-  regex?: RegExp;
   max?: number;
   timeoutMs?: number;
   verbose?: boolean;
@@ -342,10 +341,6 @@ export function attachConsoleListener(
       return;
     }
 
-    if (options.regex && !matchesRegex(options.regex, text)) {
-      return;
-    }
-
     const level = data.params.type || "log";
     const message: ConsoleMessage = {
       level,
@@ -386,16 +381,6 @@ export function attachConsoleListener(
  */
 export function enableRuntime(connection: CdpConnection): void {
   connection.send({ id: 1, method: "Runtime.enable" });
-}
-
-/**
- * Test regex safely, including global/sticky cases.
- */
-function matchesRegex(regex: RegExp, text: string): boolean {
-  if (regex.global || regex.sticky) {
-    regex.lastIndex = 0;
-  }
-  return regex.test(text);
 }
 
 function isConsoleApiCalled(

@@ -13,7 +13,6 @@ Use `rn-logs` to read React Native Metro logs via CDP without MCP overhead. Defa
 
 - You need live Metro logs from a running RN app
 - You want low-context, plain text log output
-- You need to filter logs quickly with a regex
 
 ## Requirements
 
@@ -40,11 +39,6 @@ rn-logs logs --app "<id|name>"
 rn-logs logs --app "<id|name>" --limit 50
 ```
 
-4) Filter logs
-
-```bash
-rn-logs logs --app "<id|name>" --regex "error|warn"
-```
 
 ## Non-interactive mode
 
@@ -57,9 +51,3 @@ rn-logs logs --app "<id|name>" --regex "error|warn"
 - `metro not reachable` -> start Metro or fix host/port
 - `no apps connected` -> run app on simulator or device
 - `multiple apps connected` -> pass `--app`
-
-## Examples
-
-```bash
-rn-logs logs --app "com.example.app" --regex "Network" --limit 20
-```

@@ -23,7 +23,6 @@ type GlobalOptions = {
 
 type LogsOptions = GlobalOptions & {
   app?: string;
-  regex?: string;
   limit?: number;
   follow?: boolean;
   verbose?: boolean;
@@ -78,7 +77,7 @@ function run(): void {
     .version(getCliVersion())
     .addHelpText(
       "after",
-      "\nExamples:\n  rn-logs apps\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
+      "\nExamples:\n  rn-logs apps\n  rn-logs logs --app \"MyApp\"\n"
     );
 
   program
@@ -105,13 +104,12 @@ function run(): void {
     .option("--app <id|name>", "target app id or name")
     .option("--host <host>", "Metro host", DEFAULT_HOST)
     .option("--port <port>", "Metro port", `${DEFAULT_PORT}`)
-    .option("--regex <expr>", "filter logs by regex")
     .option("--limit <n>", "capture last n logs then exit", (value) => Number(value))
     .option("--verbose", "include full stack traces")
     .option("--follow", "stream logs")
     .addHelpText(
       "after",
-      "\nExamples:\n  rn-logs logs --app \"MyApp\" --follow\n  rn-logs logs --app \"MyApp\" --limit 50\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
+      "\nExamples:\n  rn-logs logs --app \"MyApp\" --follow\n  rn-logs logs --app \"MyApp\" --limit 50\n"
     )
     .action(async (options: LogsOptions) => {
       let metroServerOrigin = "";
@@ -126,26 +124,17 @@ function run(): void {
         const connection = await connectCdpAsync(target.webSocketDebuggerUrl);
         enableRuntime(connection);
 
-        let regex: RegExp | undefined;
-        if (options.regex) {
-          try {
-            regex = new RegExp(options.regex);
-          } catch (error) {
-            throw new Error(`Invalid --regex: ${(error as Error).message}`);
-          }
-        }
         const limit = options.limit ?? 0;
         const follow =
           limit > 0
             ? false
             : options.follow !== undefined
               ? options.follow
-              : !options.regex;
+              : true;
         const shouldBuffer = limit > 0 && !follow;
         const tailBuffer = shouldBuffer ? createTailBuffer<BufferedLogEntry>(limit) : null;
 
         const listener = attachConsoleListener(connection, {
-          regex,
           verbose: options.verbose,
           max: shouldBuffer ? undefined : limit > 0 ? limit : undefined,
           timeoutMs: follow ? undefined : shouldBuffer ? 500 : 5000,

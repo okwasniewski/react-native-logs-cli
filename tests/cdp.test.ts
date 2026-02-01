@@ -60,35 +60,6 @@ describe("attachConsoleListener", () => {
     expect(output).toEqual(["hello"]);
   });
 
-  it("respects regex filter", async () => {
-    const { connection, emitMessage } = makeConnection();
-    const output: string[] = [];
-    const listener = attachConsoleListener(connection, {
-      timeoutMs: 10,
-      regex: /error/,
-      onLog: (_, formatted) => output.push(formatted)
-    });
-
-    emitMessage({
-      method: "Runtime.consoleAPICalled",
-      params: {
-        type: "log",
-        args: [{ type: "string", value: "ok" }]
-      }
-    });
-
-    emitMessage({
-      method: "Runtime.consoleAPICalled",
-      params: {
-        type: "log",
-        args: [{ type: "string", value: "error happened" }]
-      }
-    });
-
-    await listener.done;
-    expect(output).toEqual(["error happened"]);
-  });
-
   it("stops after max logs", async () => {
     const { connection, emitMessage, emitClose } = makeConnection();
     const output: string[] = [];

@@ -41,7 +41,6 @@ rn-logs logs --app "MyApp"
 ```bash
 rn-logs apps
 rn-logs logs --app "MyApp"
-rn-logs logs --app "MyApp" --regex "error|warn"
 rn-logs logs --app "MyApp" --limit 50
 ```
 
@@ -65,9 +64,8 @@ Options:
 - `--app <id|name>` target app id or name
 - `--host <host>` Metro host (default: localhost)
 - `--port <port>` Metro port (default: 8081)
-- `--regex <expr>` filter logs by regex
 - `--limit <n>` capture last n logs then exit
-- `--follow` stream logs (default unless --regex or --limit)
+- `--follow` stream logs (default unless --limit)
 - `--verbose` include full stack traces
 
 ## Notes
