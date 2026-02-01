@@ -35,12 +35,12 @@ function normalizeGlobalOptions(options: GlobalOptions): GlobalOptions {
     throw new Error("invalid --port value");
   }
 
-  if (!options.host) {
+  if (!options.host?.trim()) {
     throw new Error("invalid --host value");
   }
 
   return {
-    host: options.host,
+    host: options.host.trim(),
     port
   };
 }
@@ -113,11 +113,11 @@ function run(): void {
           }
         }
         const follow = options.follow !== false;
-        const max = options.max;
+        const max = options.max ?? 0;
 
         const listener = attachConsoleListener(connection, {
           regex,
-          max,
+          max: max > 0 ? max : undefined,
           timeoutMs: follow || max ? undefined : 5000,
           onLog: (_, formatted) => printLine(formatted)
         });

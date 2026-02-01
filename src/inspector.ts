@@ -9,7 +9,9 @@ export type InspectorApp = {
   deviceName?: string;
   reactNative?: {
     logicalDeviceId: string;
-    capabilities: unknown;
+    capabilities: {
+      nativePageReloads?: boolean;
+    };
   };
 };
 
@@ -25,15 +27,47 @@ export function getMetroServerOrigin(host: string, port: number): string {
 
 /**
  * Fetch inspector apps from Metro.
+ * Based on Expo CLI JsInspector query helper in expo/cli.
  */
 export async function fetchInspectorAppsAsync(metroServerOrigin: string): Promise<InspectorApp[]> {
-  const { queryAllInspectorAppsAsync } = (await import(
-    "@expo/cli/build/src/start/server/middleware/inspector/JsInspector.js"
-  )) as {
-    queryAllInspectorAppsAsync: (origin: string) => Promise<InspectorApp[]>;
-  };
+  const endpoints = ["/json/list", "/json"];
+  for (const endpoint of endpoints) {
+    const url = `${metroServerOrigin}${endpoint}`;
+    const apps = await fetchInspectorAppsFromUrl(url);
+    if (apps) {
+      const sorted = [...apps].reverse();
+      return sorted.filter(pageIsSupported);
+    }
+  }
 
-  return queryAllInspectorAppsAsync(metroServerOrigin);
+  return [];
+}
+
+/**
+ * Fetch inspector apps from a single Metro endpoint.
+ */
+async function fetchInspectorAppsFromUrl(url: string): Promise<InspectorApp[] | null> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json()) as unknown;
+  if (!Array.isArray(data)) {
+    return null;
+  }
+
+  return data as InspectorApp[];
+}
+
+/**
+ * Match Expo's supported debug targets filter.
+ */
+function pageIsSupported(app: InspectorApp): boolean {
+  return (
+    app.title === "React Native Experimental (Improved Chrome Reloads)" ||
+    app.reactNative?.capabilities?.nativePageReloads === true
+  );
 }
 
 /**
