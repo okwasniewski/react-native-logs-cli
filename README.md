@@ -11,8 +11,16 @@ Fast CLI to read React Native Metro logs via CDP. Built for agent-friendly outpu
 ## Install
 
 ```bash
-bun install
+npm install -g rn-logs-cli
 ```
+
+```bash
+bun add -g rn-logs-cli
+```
+
+## Package
+
+Published as `rn-logs-cli` on npm.
 
 ## Quickstart
 
