@@ -35,7 +35,7 @@ rn-logs logs --app "MyApp"
 rn-logs apps
 rn-logs logs --app "MyApp"
 rn-logs logs --app "MyApp" --regex "error|warn"
-rn-logs logs --app "MyApp" --max 50
+rn-logs logs --app "MyApp" --limit 50
 ```
 
 ## Commands
@@ -59,12 +59,12 @@ Options:
 - `--host <host>` Metro host (default: localhost)
 - `--port <port>` Metro port (default: 8081)
 - `--regex <expr>` filter logs by regex
-- `--max <n>` max logs then exit
+- `--limit <n>` capture last n logs then exit
 - `--follow` stream logs (default)
 
 ## Notes
 
-- Requires Metro running and app DevTools open.
+- Requires Metro running and app running on a simulator or device.
 - When multiple apps connected, use `--app` or select interactively in TTY.
 - Non-interactive mode stays plain text.
 

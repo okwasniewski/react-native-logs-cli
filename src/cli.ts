@@ -10,6 +10,7 @@ import {
 import { formatMetroConnectionError, isMetroConnectionError } from "./errors.js";
 import { connectCdpAsync } from "./cdp.js";
 import { attachConsoleListener, enableRuntime } from "./logs.js";
+import { createTailBuffer } from "./buffer.js";
 
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 8081;
@@ -22,7 +23,7 @@ type GlobalOptions = {
 type LogsOptions = GlobalOptions & {
   app?: string;
   regex?: string;
-  max?: number;
+  limit?: number;
   follow?: boolean;
 };
 
@@ -85,18 +86,18 @@ function run(): void {
     .option("--host <host>", "Metro host", DEFAULT_HOST)
     .option("--port <port>", "Metro port", `${DEFAULT_PORT}`)
     .option("--regex <expr>", "filter logs by regex")
-    .option("--max <n>", "max logs then exit", (value) => Number(value))
+    .option("--limit <n>", "capture last n logs then exit", (value) => Number(value))
     .option("--follow", "stream logs", true)
     .addHelpText(
       "after",
-      "\nExamples:\n  rn-logs logs --app \"MyApp\" --follow\n  rn-logs logs --app \"MyApp\" --max 50\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
+      "\nExamples:\n  rn-logs logs --app \"MyApp\" --follow\n  rn-logs logs --app \"MyApp\" --limit 50\n  rn-logs logs --app \"MyApp\" --regex \"error|warn\"\n"
     )
     .action(async (options: LogsOptions) => {
       let metroServerOrigin = "";
       try {
         const { host, port } = normalizeGlobalOptions(options);
-        if (options.max !== undefined && (!Number.isInteger(options.max) || options.max <= 0)) {
-          throw new Error("invalid --max value");
+        if (options.limit !== undefined && (!Number.isInteger(options.limit) || options.limit <= 0)) {
+          throw new Error("invalid --limit value");
         }
         metroServerOrigin = getMetroServerOrigin(host, port);
         const apps = await fetchInspectorAppsAsync(metroServerOrigin);
@@ -112,17 +113,31 @@ function run(): void {
             throw new Error(`invalid --regex: ${(error as Error).message}`);
           }
         }
-        const follow = options.follow !== false;
-        const max = options.max ?? 0;
+        const limit = options.limit ?? 0;
+        const follow = limit > 0 ? false : options.follow !== false;
+        const shouldBuffer = limit > 0 && !follow;
+        const tailBuffer = shouldBuffer ? createTailBuffer(limit) : null;
 
         const listener = attachConsoleListener(connection, {
           regex,
-          max: max > 0 ? max : undefined,
-          timeoutMs: follow || max ? undefined : 5000,
-          onLog: (_, formatted) => printLine(formatted)
+          max: shouldBuffer ? undefined : limit > 0 ? limit : undefined,
+          timeoutMs: follow ? undefined : 5000,
+          onLog: (_, formatted) => {
+            if (!shouldBuffer) {
+              printLine(formatted);
+              return;
+            }
+            tailBuffer?.push(formatted);
+          }
         });
 
         await listener.done;
+        const bufferedLogs = tailBuffer?.values() ?? [];
+        if (shouldBuffer && bufferedLogs.length > 0) {
+          for (const line of bufferedLogs) {
+            printLine(line);
+          }
+        }
       } catch (error) {
         handleActionError(error, metroServerOrigin);
       }

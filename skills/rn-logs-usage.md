@@ -18,7 +18,7 @@ Use `rn-logs` to read React Native Metro logs via CDP without MCP overhead. Defa
 ## Requirements
 
 - Metro is running
-- App is connected to DevTools (Dev Menu -> Open DevTools)
+- App is running on a simulator or device
 
 ## Core workflow
 
@@ -37,7 +37,7 @@ rn-logs logs --app "<id|name>"
 3) Snapshot logs
 
 ```bash
-rn-logs logs --app "<id|name>" --max 50
+rn-logs logs --app "<id|name>" --limit 50
 ```
 
 4) Filter logs
@@ -60,5 +60,5 @@ rn-logs logs --app "<id|name>" --regex "error|warn"
 ## Examples
 
 ```bash
-rn-logs logs --app "com.example.app" --regex "Network" --max 20
+rn-logs logs --app "com.example.app" --regex "Network" --limit 20
 ```
