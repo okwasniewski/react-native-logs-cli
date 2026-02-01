@@ -20,7 +20,7 @@ export async function connectCdpAsync(url: string): Promise<CdpConnection> {
         close: () => socket.close(),
         send: (payload) => socket.send(JSON.stringify(payload)),
         onMessage: (handler) => {
-          socket.on("message", (data) => {
+          socket.on("message", (data: WebSocket.RawData) => {
             const text = typeof data === "string" ? data : data.toString();
             try {
               handler(JSON.parse(text));
@@ -36,7 +36,7 @@ export async function connectCdpAsync(url: string): Promise<CdpConnection> {
       resolve(connection);
     });
 
-    socket.once("error", (error) => {
+    socket.once("error", (error: Error) => {
       reject(error);
     });
   });

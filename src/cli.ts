@@ -8,6 +8,8 @@ import {
   type InspectorApp
 } from "./inspector.js";
 import { formatMetroConnectionError, isMetroConnectionError } from "./errors.js";
+import { connectCdpAsync } from "./cdp.js";
+import { attachConsoleListener, enableRuntime } from "./logs.js";
 
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 8081;
@@ -89,8 +91,29 @@ function run(): void {
         }
         metroServerOrigin = getMetroServerOrigin(host, port);
         const apps = await fetchInspectorAppsAsync(metroServerOrigin);
-        await resolveTargetApp(apps, options.app);
-        throw new Error("logs not implemented");
+        const target = await resolveTargetApp(apps, options.app);
+        const connection = await connectCdpAsync(target.webSocketDebuggerUrl);
+        enableRuntime(connection);
+
+        let regex: RegExp | undefined;
+        if (options.regex) {
+          try {
+            regex = new RegExp(options.regex);
+          } catch (error) {
+            throw new Error(`invalid --regex: ${(error as Error).message}`);
+          }
+        }
+        const follow = options.follow !== false;
+        const max = options.max;
+
+        const listener = attachConsoleListener(connection, {
+          regex,
+          max,
+          timeoutMs: follow || max ? undefined : 5000,
+          onLog: (_, formatted) => printLine(formatted)
+        });
+
+        await listener.done;
       } catch (error) {
         handleActionError(error, metroServerOrigin);
       }
