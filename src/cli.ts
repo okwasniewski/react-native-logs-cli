@@ -130,9 +130,9 @@ function run(): void {
           verbose: options.verbose,
           max: shouldBuffer ? undefined : limit > 0 ? limit : undefined,
           timeoutMs: follow ? undefined : shouldBuffer ? 500 : 5000,
-          onLog: (_, formatted) => {
+          onLog: (message, formatted) => {
             if (!shouldBuffer) {
-              printLine(formatted);
+              printLog(message.level, formatted);
               return;
             }
             tailBuffer?.push(formatted);
@@ -223,6 +223,25 @@ async function resolveTargetApp(
 function printLine(message: string): void {
   if (!isInteractive()) {
     console.log(message);
+    return;
+  }
+  log.info(message);
+}
+
+/**
+ * Print log with level-aware styling.
+ */
+function printLog(level: string, message: string): void {
+  if (!isInteractive()) {
+    console.log(message);
+    return;
+  }
+  if (level === "error") {
+    log.error(message);
+    return;
+  }
+  if (level === "warning") {
+    log.warn(message);
     return;
   }
   log.info(message);

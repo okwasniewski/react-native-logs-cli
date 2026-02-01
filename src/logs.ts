@@ -81,6 +81,33 @@ type FormatOptions = {
 };
 
 /**
+ * Format console arguments into a single line.
+ */
+export function formatConsoleArguments(
+  args: RemoteObject[],
+  options: FormatOptions = {}
+): string {
+  const formatted = args.map((arg) => formatConsoleArgument(arg, options));
+  if (options.verbose) {
+    return formatted.join(" ");
+  }
+
+  const locations = findBestLocations(args);
+  const filtered = formatted.filter((value) =>
+    value && value !== "Error Stack:" && !isCodeFrame(value) && !isStackFrameValue(value)
+  );
+  const base = filtered.join(" ").trim();
+  if (locations.length === 0) {
+    return base;
+  }
+  const stack = locations.map((location) => `  at ${location}`).join("\n");
+  if (!base) {
+    return `Stack Trace:\n${stack}`;
+  }
+  return `${base}\nStack Trace:\n${stack}`;
+}
+
+/**
  * Format a console argument into a readable string.
  */
 export function formatConsoleArgument(arg: RemoteObject, options: FormatOptions = {}): string {
@@ -111,11 +138,154 @@ export function formatConsoleArgument(arg: RemoteObject, options: FormatOptions 
 }
 
 /**
- * Strip stack traces from error descriptions.
+ * Strip stack traces while keeping the best frame.
  */
 function stripStackTrace(description: string): string {
-  const [firstLine] = description.split("\n");
-  return firstLine ?? description;
+  const lines = description.split("\n");
+  const firstLine = lines[0] ?? description;
+  const frame = pickRelevantFrame(lines.slice(1));
+  if (!frame) {
+    return firstLine;
+  }
+  return `${firstLine} (${frame})`;
+}
+
+/**
+ * Pick the most relevant stack frame.
+ */
+function pickRelevantFrame(lines: string[]): string | null {
+  for (const line of lines) {
+    const cleaned = line.trim();
+    if (!cleaned) {
+      continue;
+    }
+    const match = cleaned.match(/\bat\s+(?:.+?\s+\()?([^\s)]+:\d+:\d+)\)?$/);
+    if (!match) {
+      continue;
+    }
+    const location = match[1];
+    if (
+      location.startsWith("http://") ||
+      location.startsWith("https://") ||
+      location.includes("node_modules/") ||
+      location.includes("internal/") ||
+      location.includes("[native code]")
+    ) {
+      continue;
+    }
+    return location;
+  }
+  return null;
+}
+
+/**
+ * Pick a location from stack frame lines.
+ */
+function collectStackLocations(lines: string[], limit: number): string[] {
+  const locations: string[] = [];
+  for (const line of lines) {
+    if (locations.length >= limit) {
+      break;
+    }
+    const cleaned = line.trim();
+    if (!cleaned) {
+      continue;
+    }
+    const inlineSource = extractInlineSource(cleaned);
+    if (inlineSource && !inlineSource.includes("node_modules/")) {
+      locations.push(inlineSource);
+      continue;
+    }
+    const frame = pickRelevantFrame([cleaned]);
+    if (frame && !locations.includes(frame) && !locations.includes(`./${frame}`)) {
+      locations.push(frame);
+    }
+  }
+
+  return locations;
+}
+
+/**
+ * Extract inline source path from stack frame.
+ */
+function extractInlineSource(line: string): string | null {
+  const start = line.indexOf("(./");
+  if (start === -1) {
+    return null;
+  }
+  const end = line.lastIndexOf(") (");
+  if (end > start) {
+    return line.slice(start + 1, end);
+  }
+  const fallbackEnd = line.indexOf(")", start);
+  if (fallbackEnd > start) {
+    return line.slice(start + 1, fallbackEnd);
+  }
+  return null;
+}
+
+/**
+ * Find a code frame location from Metro errors.
+ */
+function findBestLocations(args: RemoteObject[]): string[] {
+  let file: string | null = null;
+  let line: string | null = null;
+  const stackLines: string[] = [];
+
+  for (const arg of args) {
+    const text = getArgText(arg);
+    if (!text) {
+      continue;
+    }
+    stackLines.push(...text.split("\n"));
+    if (!file) {
+      const match = text.match(/Code:\s*([^\n]+)/);
+      if (match) {
+        file = match[1].trim();
+      }
+    }
+    if (!line) {
+      const match = text.match(/^>\s*(\d+)\s*\|/m);
+      if (match) {
+        line = match[1];
+      }
+    }
+    if (file && line) {
+      return [`${file}:${line}`, ...collectStackLocations(stackLines, 3)];
+    }
+  }
+
+  return collectStackLocations(stackLines, 3);
+}
+
+/**
+ * Get a readable string from a console argument.
+ */
+function getArgText(arg: RemoteObject): string | null {
+  if (arg.description !== undefined) {
+    return arg.description;
+  }
+  if (arg.value !== undefined) {
+    return String(arg.value);
+  }
+  if (arg.unserializableValue !== undefined) {
+    return arg.unserializableValue;
+  }
+  return null;
+}
+
+/**
+ * Detect Metro code frame blocks.
+ */
+function isCodeFrame(value: string): boolean {
+  return /\bCode:\s*[^\n]+/.test(value) && /^>\s*\d+\s*\|/m.test(value);
+}
+
+/**
+ * Detect stack frame lines.
+ */
+function isStackFrameValue(value: string): boolean {
+  return value.startsWith("Error Stack:") || /^\s*at\s+/.test(value);
 }
 
 /**
@@ -167,9 +337,7 @@ export function attachConsoleListener(
     }
 
     const args = data.params.args || [];
-    const text = args
-      .map((arg: RemoteObject) => formatConsoleArgument(arg, { verbose: options.verbose }))
-      .join(" ");
+    const text = formatConsoleArguments(args, { verbose: options.verbose });
     if (!text || text.includes(UNSUPPORTED_CLIENT_MESSAGE)) {
       return;
     }
