@@ -25,6 +25,7 @@ type LogsOptions = GlobalOptions & {
   regex?: string;
   limit?: number;
   follow?: boolean;
+  verbose?: boolean;
 };
 
 /**

@@ -167,7 +167,9 @@ export function attachConsoleListener(
     }
 
     const args = data.params.args || [];
-    const text = args.map((arg) => formatConsoleArgument(arg, { verbose: options.verbose })).join(" ");
+    const text = args
+      .map((arg: RemoteObject) => formatConsoleArgument(arg, { verbose: options.verbose }))
+      .join(" ");
     if (!text || text.includes(UNSUPPORTED_CLIENT_MESSAGE)) {
       return;
     }
