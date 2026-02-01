@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "type": "module",
   "bin": {
-    "rn-logs": "./dist/cli.js"
+    "rn-logs": "./dist/cli.js",
+    "rn-logs-cli": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
