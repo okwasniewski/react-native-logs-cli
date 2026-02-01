@@ -1,6 +1,7 @@
-# rn-logs
+# rn-logs 🔧
 
-Fast CLI to read React Native Metro logs via CDP. Built for agent-friendly output with optional TTY niceties.
+Fast CLI to read React Native Metro logs via CDP. Built for agent-friendly
+output with optional TTY niceties.
 
 ## Why
 
@@ -68,6 +69,11 @@ Options:
 - Requires Metro running and app running on a simulator or device.
 - When multiple apps connected, use `--app` or select interactively in TTY.
 - Non-interactive mode stays plain text.
+
+## Known Limitations
+
+- CDP attach and React Native DevTools cannot run at the same time; they compete
+  for the inspector channel. Use one per session.
 
 ## Agent Skill
 

@@ -28,6 +28,11 @@ type LogsOptions = GlobalOptions & {
   verbose?: boolean;
 };
 
+type BufferedLogEntry = {
+  level: string;
+  formatted: string;
+};
+
 /**
  * Validate and normalize Metro host/port.
  */
@@ -123,7 +128,7 @@ function run(): void {
               ? options.follow
               : !options.regex;
         const shouldBuffer = limit > 0 && !follow;
-        const tailBuffer = shouldBuffer ? createTailBuffer(limit) : null;
+        const tailBuffer = shouldBuffer ? createTailBuffer<BufferedLogEntry>(limit) : null;
 
         const listener = attachConsoleListener(connection, {
           regex,
@@ -135,15 +140,15 @@ function run(): void {
               printLog(message.level, formatted);
               return;
             }
-            tailBuffer?.push(formatted);
+            tailBuffer?.push({ level: message.level, formatted });
           }
         });
 
         await listener.done;
         const bufferedLogs = tailBuffer?.values() ?? [];
         if (shouldBuffer && bufferedLogs.length > 0) {
-          for (const line of bufferedLogs) {
-            printLine(line);
+          for (const entry of bufferedLogs) {
+            printLog(entry.level, entry.formatted);
           }
         }
       } catch (error) {

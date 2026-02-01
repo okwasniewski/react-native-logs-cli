@@ -1,11 +1,11 @@
 /**
  * Create a fixed-size buffer that keeps the newest entries.
  */
-export function createTailBuffer(limit: number): {
-  push: (value: string) => void;
-  values: () => string[];
+export function createTailBuffer<T>(limit: number): {
+  push: (value: T) => void;
+  values: () => T[];
 } {
-  const items: string[] = [];
+  const items: T[] = [];
   return {
     push: (value) => {
       items.push(value);
