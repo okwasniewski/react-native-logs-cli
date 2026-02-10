@@ -1,11 +1,15 @@
 ---
-name: rn-logs-usage
+name: react-native-logs-cli
 description: >
   Use rn-logs to read React Native Metro logs via CDP without MCP overhead.
   Default output is plain text and safe for non-interactive agent runs.
+license: MIT
+metadata:
+  author: okwasniewski
+  version: "1.0.0"
 ---
 
-# rn-logs Agent Skill
+# rn-logs cli
 
 Use `rn-logs` to read React Native Metro logs via CDP without MCP overhead.
 Default output is plain text and safe for non-interactive agent runs.
@@ -22,22 +26,25 @@ Default output is plain text and safe for non-interactive agent runs.
 
 ## Core workflow
 
-1. List connected apps
-
 ```bash
+# 1. List connected apps
 rn-logs apps
-```
 
-2. Stream logs
-
-```bash
+# 2. Stream logs
 rn-logs logs --app "<id|name>"
+
+# 3. Snapshot logs
+rn-logs logs --app "<id|name>" --limit 50
 ```
 
-3. Snapshot logs
+## Command options
 
 ```bash
-rn-logs logs --app "<id|name>" --limit 50
+# Changing default port or host
+rn-logs "[command]" --host "<host>"    # Metro host (default: localhost)
+rn-logs "[command]" --port "<port>"    # Metro port (default: 8081)
+
+rn-logs help
 ```
 
 ## Non-interactive mode
