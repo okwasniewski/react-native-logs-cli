@@ -26,7 +26,7 @@ bun add -g rn-logs-cli
 ```
 
 See
-[`skills/rn-logs-usage.md`](https://github.com/okwasniewski/react-native-logs-cli/blob/main/skills/rn-logs-usage.md)
+[`skills/rn-logs-usage.md`](https://github.com/okwasniewski/react-native-logs-cli/blob/main/skills/react-native-logs-cli/SKILL.md)
 for the agent usage guide.
 
 ## Package
