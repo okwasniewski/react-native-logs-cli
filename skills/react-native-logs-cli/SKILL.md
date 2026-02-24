@@ -19,8 +19,25 @@ Default output is plain text and safe for non-interactive agent runs.
 - You need live Metro logs from a running RN app
 - You want low-context, plain text log output
 
+## Installation
+
+```bash
+npm install -g rn-logs-cli
+```
+
+```bash
+bun add -g rn-logs-cli
+```
+
+Then verify:
+
+```bash
+rn-logs --help
+```
+
 ## Requirements
 
+- `rn-logs` is installed and available in PATH
 - Metro is running
 - App is running on a simulator or device
 
